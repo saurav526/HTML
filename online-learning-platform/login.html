@@ -2,23 +2,26 @@
 <html>
 <head>
     <title>Login</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h1>Login</h1>
+<header><h1>Login</h1></header>
 
-<form>
-    <label>Email:</label><br>
-    <input type="email"><br><br>
+<div class="container">
+    <div class="card">
+        <form onsubmit="loginUser(); return false;">
+            <label>Email</label>
+            <input type="email" required>
 
-    <label>Password:</label><br>
-    <input type="password"><br><br>
+            <label>Password</label>
+            <input type="password" required>
 
-    <input type="submit" value="Login">
-</form>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</div>
 
-<a href="index.html">Back to Home</a>
-
+<script src="js/script.js"></script>
 </body>
 </html>
-

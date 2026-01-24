@@ -2,32 +2,30 @@
 <html>
 <head>
     <title>Courses</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h1>Available Courses</h1>
+<header><h1>Available Courses</h1></header>
 
-<ul>
-    <li>
+<nav>
+    <a href="index.html">Home</a>
+</nav>
+
+<div class="container">
+    <div class="card">
         <h3>Web Development</h3>
-        <p>HTML, CSS, JavaScript basics</p>
-        <a href="course-detail.html">View Course</a>
-    </li>
+        <p>HTML, CSS, JavaScript</p>
+        <a href="course-detail.html"><button>View Course</button></a>
+    </div>
 
-    <li>
+    <div class="card">
         <h3>Python Programming</h3>
-        <p>Beginner to advanced Python</p>
-        <a href="course-detail.html">View Course</a>
-    </li>
+        <p>Beginner to Advanced</p>
+        <a href="course-detail.html"><button>View Course</button></a>
+    </div>
+</div>
 
-    <li>
-        <h3>Data Science</h3>
-        <p>Data analysis and visualization</p>
-        <a href="course-detail.html">View Course</a>
-    </li>
-</ul>
-
-<a href="index.html">Back to Home</a>
-
+<script src="js/script.js"></script>
 </body>
 </html>
