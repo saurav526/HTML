@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professor Finder | MIT-ADT University</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #e94560;
+            --accent-light: #ff6b88;
+            --gold: #d4af37;
+            --text-light: #f4f4f9;
+            --text-muted: #a8a8b8;
+            --card-bg: #0f1419;
+            --shadow: rgba(233, 69, 96, 0.15);
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            min-height: 100vh;
+            color: var(--text-light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            background: linear-gradient(135deg, #fff, var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            letter-spacing: 2px;
+        }
+
+        .search-section {
+            background: rgba(15,20,25,0.7);
+            padding: 2.5rem;
+            border-radius: 20px;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(233,69,96,0.3);
+        }
+
+        .search-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border: none;
+            color: white;
+            padding: 0.8rem 1.4rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 14px;
+            border: 2px solid rgba(233,69,96,0.3);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(233,69,96,0.3);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .professor-card {
+            background: rgba(15,20,25,0.8);
+            padding: 2rem;
+            border-radius: 18px;
+            border: 1px solid rgba(233,69,96,0.2);
+        }
+
+        .prof-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent), var(--gold));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <h1>Professor Finder</h1>
+        <p class="subtitle">DISCOVER YOUR MENTOR</p>
+    </header>
+
+    <div class="search-section">
+        <div class="search-header">
+            <h2>Find Your Professor</h2>
+            <button class="admin-btn" onclick="openAdmin()">Admin</button>
+        </div>
+
+        <input class="search-input" id="searchInput"
+               placeholder="Search by name, department, cabin..."
+               oninput="filterProfessors()">
+
+        <div>
+            <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+            <button class="filter-btn" onclick="setFilter('Computer Science', this)">CS</button>
+            <button class="filter-btn" onclick="setFilter('Engineering', this)">Engineering</button>
+            <button class="filter-btn" onclick="setFilter('Management', this)">Management</button>
+        </div>
+    </div>
+
+    <div class="results-grid" id="resultsGrid"></div>
+
+    <footer>
+        <h3>MIT-ADT University</h3>
+        <p>Pune, Maharashtra</p>
+    </footer>
+
+</div>
+
+<script>
+    let professors = [
+        {
+            name: "Dr. Rajesh Kumar",
+            department: "Computer Science",
+            cabin: "A-301",
+            email: "rajesh.kumar@mit.edu"
+        },
+        {
+            name: "Dr. Priya Sharma",
+            department: "Engineering",
+            cabin: "B-205",
+            email: "priya.sharma@mit.edu"
+        }
+    ];
+
+    let currentFilter = "all";
+
+    function render(data) {
+        const grid = document.getElementById("resultsGrid");
+        grid.innerHTML = "";
+
+        if (data.length === 0) {
+            grid.innerHTML = "<p>No results found</p>";
+            return;
+        }
+
+        data.forEach(p => {
+            grid.innerHTML += `
+                <div class="professor-card">
+                    <div class="prof-avatar">${p.name[0]}</div>
+                    <h3>${p.name}</h3>
+                    <p>${p.department}</p>
+                    <p>Cabin: ${p.cabin}</p>
+                    <p>${p.email}</p>
+                </div>
+            `;
+        });
+    }
+
+    function filterProfessors() {
+        const q = searchInput.value.toLowerCase();
+        let data = professors;
+
+        if (currentFilter !== "all") {
+            data = data.filter(p => p.department === currentFilter);
+        }
+
+        data = data.filter(p =>
+            p.name.toLowerCase().includes(q) ||
+            p.department.toLowerCase().includes(q) ||
+            p.cabin.toLowerCase().includes(q)
+        );
+
+        render(data);
+    }
+
+    function setFilter(filter, btn) {
+        currentFilter = filter;
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        filterProfessors();
+    }
+
+    function openAdmin() {
+        alert("Admin panel is already included in your full version.");
+    }
+
+    render(professors);
+</script>
+
+</body>
+</html>
