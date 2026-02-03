@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happy Birthday Brother 🎂</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    height: 100vh;
+    background: radial-gradient(circle, #2b1055, #000);
+    overflow: hidden;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    text-align: center;
+    z-index: 2;
+}
+
+h1 {
+    font-size: 3.5rem;
+    animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 10px #ff4081; }
+    to { text-shadow: 0 0 30px #ff80ab; }
+}
+
+.name {
+    font-size: 2.8rem;
+    color: #ffd740;
+    margin-top: 10px;
+    animation: pop 1s infinite alternate;
+}
+
+@keyframes pop {
+    to { transform: scale(1.1); }
+}
+
+.message {
+    margin-top: 15px;
+    font-size: 1.2rem;
+    opacity: 0;
+    animation: fadeIn 3s forwards 2s;
+}
+
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+/* 🎂 Cake */
+.cake {
+    margin: 30px auto;
+    width: 200px;
+    height: 140px;
+    background: #ff8a65;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+}
+
+.cake::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    left: 80px;
+    width: 40px;
+    height: 30px;
+    background: #fff176;
+    border-radius: 5px;
+}
+
+.flame {
+    position: absolute;
+    top: -45px;
+    left: 95px;
+    width: 10px;
+    height: 15px;
+    background: orange;
+    border-radius: 50%;
+    animation: flicker 0.3s infinite;
+}
+
+@keyframes flicker {
+    from { transform: scale(1); }
+    to { transform: scale(1.2); }
+}
+
+.cut {
+    animation: cutCake 1s forwards;
+}
+
+@keyframes cutCake {
+    to {
+        transform: scaleX(0.9) translateX(10px);
+        opacity: 0.7;
+    }
+}
+
+/* 🎈 Balloons */
+.balloon {
+    position: absolute;
+    bottom: -150px;
+    width: 60px;
+    height: 80px;
+    border-radius: 50%;
+    animation: float 10s linear infinite;
+}
+
+@keyframes float {
+    to { transform: translateY(-120vh); }
+}
+
+/* 🎊 Confetti */
+.confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    animation: fall 5s linear infinite;
+}
+
+@keyframes fall {
+    to { transform: translateY(110vh) rotate(360deg); }
+}
+
+/* 🔊 Music Button */
+.music-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: none;
+    background: #ff4081;
+    color: white;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🎉 Happy Birthday 🎉</h1>
+
+    <!-- 👇 Change name here -->
+    <div class="name">My Dear Brother 💙</div>
+
+    <div class="message">
+        May your life be full of success, happiness,  
+        and endless smiles.  
+        You mean the world to me ❤️🎂
+    </div>
+
+    <!-- 🎂 Cake -->
+    <div class="cake" onclick="cutCake()">
+        <div class="flame"></div>
+    </div>
+    <p>👆 Click the cake to cut it!</p>
+</div>
+
+<!-- 🎵 Birthday Music -->
+<audio id="music" autoplay loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
+</audio>
+
+<button class="music-btn" onclick="toggleMusic()">🔊 Music</button>
+
+<script>
+const colors = ['#ff5252','#ff4081','#40c4ff','#69f0ae','#ffd740'];
+
+/* Balloons */
+for(let i=0;i<12;i++){
+    let b=document.createElement('div');
+    b.className='balloon';
+    b.style.background=colors[Math.floor(Math.random()*colors.length)];
+    b.style.left=Math.random()*100+'vw';
+    b.style.animationDuration=(6+Math.random()*5)+'s';
+    document.body.appendChild(b);
+}
+
+/* Confetti */
+for(let i=0;i<40;i++){
+    let c=document.createElement('div');
+    c.className='confetti';
+    c.style.left=Math.random()*100+'vw';
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration=(3+Math.random()*3)+'s';
+    document.body.appendChild(c);
+}
+
+/* Cake cut */
+function cutCake(){
+    document.querySelector('.cake').classList.add('cut');
+    document.querySelector('.flame').style.display='none';
+}
+
+/* Music toggle */
+const music=document.getElementById('music');
+function toggleMusic(){
+    if(music.paused){
+        music.play();
+    }else{
+        music.pause();
+    }
+}
+</script>
+
+</body>
+</html>
