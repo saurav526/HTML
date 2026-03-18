@@ -1,0 +1,972 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professor Finder | MIT-ADT University</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #e94560;
+            --accent-light: #ff6b88;
+            --gold: #d4af37;
+            --text-light: #f4f4f9;
+            --text-muted: #a8a8b8;
+            --card-bg: #0f1419;
+            --shadow: rgba(233, 69, 96, 0.15);
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            min-height: 100vh;
+            color: var(--text-light);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(233, 69, 96, 0.05) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--text-light) 0%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .search-section {
+            background: rgba(15, 20, 25, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(233, 69, 96, 0.2);
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 20px 60px var(--shadow);
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .search-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+        }
+
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.5);
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1.2rem 3.5rem 1.2rem 1.5rem;
+            font-size: 1.1rem;
+            border: 2px solid rgba(233, 69, 96, 0.3);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            font-family: 'Work Sans', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+            font-size: 1.3rem;
+            pointer-events: none;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            animation: fadeIn 0.8s ease-out 0.4s backwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .professor-card {
+            background: rgba(15, 20, 25, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(233, 69, 96, 0.15);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .professor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--gold));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .professor-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px var(--shadow);
+        }
+
+        .professor-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .prof-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .prof-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--accent), var(--gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .prof-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+            color: var(--text-light);
+        }
+
+        .prof-dept {
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .prof-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .detail-icon {
+            color: var(--accent);
+            width: 20px;
+        }
+
+        .prof-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            padding: 0.4rem 0.8rem;
+            background: rgba(233, 69, 96, 0.15);
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--accent-light);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            border-radius: 24px;
+            padding: 3rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--text-light);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: var(--accent);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid rgba(233, 69, 96, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-light);
+            font-family: 'Work Sans', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.4);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 5rem;
+            padding: 2rem;
+            border-top: 1px solid rgba(233, 69, 96, 0.2);
+        }
+
+        .university-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-light) 0%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .location {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .search-section {
+                padding: 2rem;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+        }
+
+        .admin-prof-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(233, 69, 96, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .admin-prof-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent);
+        }
+
+        .admin-prof-info h4 {
+            color: var(--text-light);
+            margin-bottom: 0.3rem;
+            font-size: 1.1rem;
+        }
+
+        .admin-prof-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 0.2rem 0;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #e94560, #c41e3a);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .delete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.4);
+        }
+
+        .success-message {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            color: #81c784;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Professor Finder</h1>
+            <p class="subtitle">DISCOVER YOUR MENTOR</p>
+        </header>
+
+        <div class="search-section">
+            <div class="search-header">
+                <h2 class="search-title">Find Your Professor</h2>
+                <button class="admin-btn" onclick="openAdminModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="16"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                    </svg>
+                    Admin
+                </button>
+            </div>
+
+            <div class="search-box">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    id="searchInput"
+                    placeholder="Search by name, department, specialization, or cabin number..."
+                    oninput="filterProfessors()"
+                >
+                <span class="search-icon">🔍</span>
+            </div>
+
+            <div class="search-filters">
+                <button class="filter-btn active" onclick="filterByCategory('all')">All</button>
+                <button class="filter-btn" onclick="filterByCategory('Computer Science')">Computer Science</button>
+                <button class="filter-btn" onclick="filterByCategory('Engineering')">Engineering</button>
+                <button class="filter-btn" onclick="filterByCategory('Management')">Management</button>
+                <button class="filter-btn" onclick="filterByCategory('Design')">Design</button>
+            </div>
+        </div>
+
+        <div class="results-grid" id="resultsGrid">
+            <!-- Results will be populated here -->
+        </div>
+
+        <footer>
+            <div class="university-name">MIT-ADT UNIVERSITY</div>
+            <div class="location">Pune, Maharashtra, India</div>
+        </footer>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Admin Login</h2>
+                <button class="close-btn" onclick="closeLoginModal()">&times;</button>
+            </div>
+            <form onsubmit="adminLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="adminUsername" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="adminPassword" required>
+                </div>
+                <div id="loginError" style="color: var(--accent); margin-bottom: 1rem; display: none; font-size: 0.9rem;">
+                    Invalid credentials. Please try again.
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+                <div style="margin-top: 1rem; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+                    Demo: admin / admin123
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Modal -->
+    <div class="modal" id="adminModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Admin Dashboard</h2>
+                <button class="close-btn" onclick="closeAdminModal()">&times;</button>
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <button class="admin-btn" onclick="showAddForm()" style="margin-right: 1rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="16"/>
+                        <line x1="8" y1="12" x2="16" y2="12"/>
+                    </svg>
+                    Add Professor
+                </button>
+                <button class="admin-btn" onclick="logoutAdmin()" style="background: linear-gradient(135deg, #666, #888);">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Logout
+                </button>
+            </div>
+
+            <!-- Add Professor Form -->
+            <div id="addProfForm" style="display: none;">
+                <h3 style="color: var(--text-light); margin-bottom: 1.5rem; font-size: 1.3rem;">Add New Professor</h3>
+                <form onsubmit="addProfessor(event)">
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-input" id="profName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-input" id="profDept" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cabin Number</label>
+                        <input type="text" class="form-input" id="profCabin" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="profEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-input" id="profPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Specialization (comma-separated)</label>
+                        <input type="text" class="form-input" id="profSpec" placeholder="AI, Machine Learning, Data Science">
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="submit" class="submit-btn">Add Professor</button>
+                        <button type="button" class="submit-btn" onclick="hideAddForm()" style="background: linear-gradient(135deg, #666, #888);">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Professors List -->
+            <div id="profList">
+                <h3 style="color: var(--text-light); margin-bottom: 1.5rem; font-size: 1.3rem;">Manage Professors</h3>
+                <div id="adminProfList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        let professors = [
+            {
+                id: 1,
+                name: "Dr. Rajesh Kumar",
+                department: "Computer Science",
+                cabin: "A-301",
+                email: "rajesh.kumar@mituniversity.edu.in",
+                phone: "+91 98765 43210",
+                specialization: ["Artificial Intelligence", "Machine Learning", "Data Mining"]
+            },
+            {
+                id: 2,
+                name: "Dr. Priya Sharma",
+                department: "Engineering",
+                cabin: "B-205",
+                email: "priya.sharma@mituniversity.edu.in",
+                phone: "+91 98765 43211",
+                specialization: ["Robotics", "Automation", "Control Systems"]
+            },
+            {
+                id: 3,
+                name: "Dr. Amit Patel",
+                department: "Management",
+                cabin: "C-102",
+                email: "amit.patel@mituniversity.edu.in",
+                phone: "+91 98765 43212",
+                specialization: ["Strategic Management", "Finance", "Leadership"]
+            },
+            {
+                id: 4,
+                name: "Dr. Sneha Deshmukh",
+                department: "Computer Science",
+                cabin: "A-405",
+                email: "sneha.deshmukh@mituniversity.edu.in",
+                phone: "+91 98765 43213",
+                specialization: ["Cybersecurity", "Network Security", "Blockchain"]
+            },
+            {
+                id: 5,
+                name: "Dr. Vikram Singh",
+                department: "Design",
+                cabin: "D-201",
+                email: "vikram.singh@mituniversity.edu.in",
+                phone: "+91 98765 43214",
+                specialization: ["UI/UX Design", "Product Design", "Design Thinking"]
+            },
+            {
+                id: 6,
+                name: "Dr. Anjali Mehta",
+                department: "Engineering",
+                cabin: "B-308",
+                email: "anjali.mehta@mituniversity.edu.in",
+                phone: "+91 98765 43215",
+                specialization: ["Renewable Energy", "Power Systems", "Solar Technology"]
+            }
+        ];
+
+        let currentFilter = 'all';
+        let isAdminLoggedIn = false;
+        let nextId = 7;
+
+        // Admin credentials (in production, this should be server-side)
+        const ADMIN_CREDENTIALS = {
+            username: "admin",
+            password: "admin123"
+        };
+
+        function renderProfessors(profsToRender = professors) {
+            const grid = document.getElementById('resultsGrid');
+            
+            if (profsToRender.length === 0) {
+                grid.innerHTML = '<div class="no-results">No professors found matching your search.</div>';
+                return;
+            }
+
+            grid.innerHTML = profsToRender.map(prof => `
+                <div class="professor-card">
+                    <div class="prof-header">
+                        <div class="prof-avatar">${prof.name.split(' ').map(n => n[0]).join('')}</div>
+                        <div class="prof-info">
+                            <h3>${prof.name}</h3>
+                            <div class="prof-dept">${prof.department}</div>
+                        </div>
+                    </div>
+                    <div class="prof-details">
+                        <div class="detail-row">
+                            <span class="detail-icon">📍</span>
+                            <span>Cabin: ${prof.cabin}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-icon">✉️</span>
+                            <span>${prof.email}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-icon">📞</span>
+                            <span>${prof.phone}</span>
+                        </div>
+                    </div>
+                    <div class="prof-tags">
+                        ${prof.specialization.map(spec => `<span class="tag">${spec}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminProfList() {
+            const listDiv = document.getElementById('adminProfList');
+            
+            listDiv.innerHTML = professors.map(prof => `
+                <div class="admin-prof-item">
+                    <div class="admin-prof-info">
+                        <h4>${prof.name}</h4>
+                        <p>${prof.department} • Cabin: ${prof.cabin}</p>
+                        <p>${prof.email}</p>
+                    </div>
+                    <button class="delete-btn" onclick="deleteProfessor(${prof.id})">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            <line x1="10" y1="11" x2="10" y2="17"/>
+                            <line x1="14" y1="11" x2="14" y2="17"/>
+                        </svg>
+                        Delete
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function filterProfessors() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let filtered = professors;
+            
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(prof => prof.department === currentFilter);
+            }
+            
+            if (searchTerm) {
+                filtered = filtered.filter(prof => 
+                    prof.name.toLowerCase().includes(searchTerm) ||
+                    prof.department.toLowerCase().includes(searchTerm) ||
+                    prof.cabin.toLowerCase().includes(searchTerm) ||
+                    prof.email.toLowerCase().includes(searchTerm) ||
+                    prof.specialization.some(spec => spec.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            renderProfessors(filtered);
+        }
+
+        function filterByCategory(category) {
+            currentFilter = category;
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            filterProfessors();
+        }
+
+        function openAdminModal() {
+            if (!isAdminLoggedIn) {
+                document.getElementById('loginModal').classList.add('active');
+            } else {
+                document.getElementById('adminModal').classList.add('active');
+                renderAdminProfList();
+            }
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+            document.getElementById('loginError').style.display = 'none';
+            document.querySelector('#loginModal form').reset();
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.remove('active');
+            hideAddForm();
+        }
+
+        function adminLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                isAdminLoggedIn = true;
+                closeLoginModal();
+                document.getElementById('adminModal').classList.add('active');
+                renderAdminProfList();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            closeAdminModal();
+            alert('Logged out successfully!');
+        }
+
+        function showAddForm() {
+            document.getElementById('addProfForm').style.display = 'block';
+            document.getElementById('profList').style.display = 'none';
+        }
+
+        function hideAddForm() {
+            document.getElementById('addProfForm').style.display = 'none';
+            document.getElementById('profList').style.display = 'block';
+            document.querySelector('#addProfForm form').reset();
+        }
+
+        function addProfessor(event) {
+            event.preventDefault();
+            
+            const newProf = {
+                id: nextId++,
+                name: document.getElementById('profName').value,
+                department: document.getElementById('profDept').value,
+                cabin: document.getElementById('profCabin').value,
+                email: document.getElementById('profEmail').value,
+                phone: document.getElementById('profPhone').value,
+                specialization: document.getElementById('profSpec').value.split(',').map(s => s.trim()).filter(s => s)
+            };
+            
+            professors.push(newProf);
+            renderProfessors();
+            hideAddForm();
+            renderAdminProfList();
+            
+            alert('Professor added successfully!');
+        }
+
+        function deleteProfessor(id) {
+            if (confirm('Are you sure you want to delete this professor?')) {
+                professors = professors.filter(prof => prof.id !== id);
+                renderProfessors();
+                renderAdminProfList();
+                alert('Professor deleted successfully!');
+            }
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('adminModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAdminModal();
+            }
+        });
+
+        document.getElementById('loginModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLoginModal();
+            }
+        });
+
+        // Initial render
+        renderProfessors();
+    </script>
+</body>
+</html>
